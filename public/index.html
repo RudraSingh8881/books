@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Online Library System</title>
+  <style>
+    :root {
+      --primary: #3f51b5;
+      --primary-dark: #2c399f;
+      --background: #f4f6f8;
+      --card-bg: #ffffff;
+      --border: #ddd;
+      --text: #222;
+      --shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    body.dark-mode {
+      --background: #121212;
+      --card-bg: #1f1f1f;
+      --border: #444;
+      --text: #f1f1f1;
+      --shadow: 0 4px 12px rgba(0,0,0,0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+    header h1 { font-size: 1.6rem; letter-spacing: 0.5px; }
+    nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 0.2s ease;
+    }
+    nav a:hover { opacity: 0.8; }
+
+    /* FOOTER */
+    footer {
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      margin-top: auto;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+    }
+
+    /* PAGES */
+    .page {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      padding: 50px 20px;
+      animation: fadeIn 0.4s ease;
+    }
+    .page.active { display: flex; }
+    @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+
+    /* AUTH FORM */
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      max-width: 400px;
+      width: 100%;
+    }
+    .auth-form h2 {
+      margin-bottom: 8px;
+      text-align: center;
+      font-size: 1.4rem;
+    }
+    .auth-form input, .auth-form button {
+      padding: 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .auth-form input { background: #fafafa; }
+    .auth-form button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s ease;
+    }
+    .auth-form button:hover { background: var(--primary-dark); }
+    .auth-form p { text-align: center; font-size: 0.9rem; }
+    .auth-form a { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+    /* LANDING PAGE */
+    #landingPage h2 { font-size: 2rem; margin-bottom: 12px; }
+    #landingPage p { font-size: 1.05rem; color: #666; margin-bottom: 30px; max-width: 500px; }
+    #enterBtn {
+      background: var(--primary-dark);
+      color: white;
+      border: none;
+      padding: 14px 36px;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    #enterBtn:hover { background: #1c2d8b; transform: scale(1.05); }
+
+    /* LIBRARY FORM */
+    #bookForm {
+      display: grid;
+      gap: 12px;
+      background: var(--card-bg);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      margin-bottom: 30px;
+      width: 100%;
+      max-width: 600px;
+    }
+    #bookForm input, #bookForm textarea, #bookForm button {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 15px;
+    }
+    #bookForm textarea { resize: vertical; min-height: 80px; }
+    #bookForm button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    #bookForm button:hover { background: var(--primary-dark); }
+
+    /* BOOK LIST */
+    #bookList {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+    }
+    .book {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.2s ease;
+    }
+    .book:hover { transform: translateY(-5px); }
+    .book img {
+      max-width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .book h3 { font-size: 1.2rem; margin-top: 6px; }
+    .book p { font-size: 0.9rem; line-height: 1.4; color: #555; }
+    .actions { margin-top: auto; display: flex; gap: 10px; }
+    .actions button {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .actions button:first-child { background: #ffcc00; }
+    .actions button:last-child { background: #ff4d4d; color: white; }
+    .actions button:hover { opacity: 0.9; }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      nav a { margin-left: 0; margin-right: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📚 Online Library</h1>
+    <nav>
+      <a href="#" onclick="showPage('landingPage')">Home</a>
+      <a href="#" onclick="toggleDarkMode()">Color</a>
+      <a href="#" id="logoutLink" style="display:none" onclick="logout()">Logout</a>
+    </nav>
+  </header>
+
+  <!-- Register Page -->
+  <div id="registerPage" class="page active">
+    <form class="auth-form" onsubmit="register(event)">
+      <h2>Create Account</h2>
+      <input type="text" id="regUser" placeholder="Username" required />
+      <input type="password" id="regPass" placeholder="Password" required />
+      <button type="submit">Register</button>
+      <p>Already have an account? <a href="#" onclick="showPage('loginPage')">Login here</a></p>
+    </form>
+  </div>
+
+  <!-- Login Page -->
+  <div id="loginPage" class="page">
+    <form class="auth-form" onsubmit="login(event)">
+      <h2>Login</h2>
+      <input type="text" id="loginUser" placeholder="Username" required />
+      <input type="password" id="loginPass" placeholder="Password" required />
+      <button type="submit">Login</button>
+      <p>No account? <a href="#" onclick="showPage('registerPage')">Register here</a></p>
+    </form>
+  </div>
+
+  <!-- Landing Page -->
+  <div id="landingPage" class="page">
+    <h2>Welcome to the Online Library</h2>
+    <p>Your personal hub for managing and exploring books. Add, edit, and organize your reading journey easily.</p>
+    <button id="enterBtn" onclick="showLibrary()">Enter Library System</button>
+  </div>
+
+  <!-- Library Page -->
+  <div id="libraryPage" class="page">
+    <form id="bookForm">
+      <input type="text" id="title" placeholder="Title" required />
+      <input type="text" id="author" placeholder="Author" required />
+      <input type="number" id="price" placeholder="Price (₹)" required />
+      <input type="text" id="image" placeholder="Image URL (optional)" />
+      <textarea id="description" placeholder="Description"></textarea>
+      <button type="submit">Save Book</button>
+    </form>
+    <div id="bookList"></div>
+  </div>
+
+  <footer>&copy; 2025 Online Library • Built with ❤️ for readers</footer>
+
+<script>
+  // --- Your original JS (no logic change) ---
+  const form = document.getElementById('bookForm');
+  const bookList = document.getElementById('bookList');
+  let resetLibraryOnEnter = false;
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+  function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+  function register(e) {
+    e.preventDefault();
+    const u = document.getElementById('regUser').value;
+    const p = document.getElementById('regPass').value;
+    localStorage.setItem('user_'+u, p);
+    alert("Registration successful!");
+    showPage('loginPage');
+  }
+  function login(e) {
+    e.preventDefault();
+    const u = document.getElementById('loginUser').value;
+    const p = document.getElementById('loginPass').value;
+    const stored = localStorage.getItem('user_'+u);
+    if(stored && stored === p){
+      localStorage.setItem('loggedIn', u);
+      document.getElementById('logoutLink').style.display='inline';
+      showPage('landingPage');
+    } else { alert("Invalid credentials"); }
+  }
+  function logout() {
+    localStorage.removeItem('loggedIn');
+    document.getElementById('logoutLink').style.display='none';
+    showPage('loginPage');
+  }
+  function showLibrary() {
+    if(!localStorage.getItem('loggedIn')){
+      alert("Please login first!");
+      showPage('loginPage');
+      return;
+    }
+    showPage('libraryPage');
+    if(resetLibraryOnEnter) {
+      form.reset(); delete form.dataset.id;
+      bookList.innerHTML=''; resetLibraryOnEnter=false;
+    }
+    fetchBooks();
+  }
+  async function fetchBooks() {
+    const res = await fetch('/api/books');
+    const books = await res.json();
+    renderBooks(books);
+  }
+  function renderBooks(books) {
+    bookList.innerHTML = '';
+    books.forEach(book => {
+      const div = document.createElement('div');
+      div.className = 'book';
+      div.innerHTML = `
+        ${book.image ? `<img src="${book.image}" alt="Book Image">` : ''}
+        <h3>${book.title}</h3>
+        <p><strong>Author:</strong> ${book.author}</p>
+        <p><strong>Price:</strong> ₹${book.price}</p>
+        <p>${book.description || ''}</p>
+        <div class="actions">
+          <button onclick="editBook(${JSON.stringify(book).replace(/"/g,'&quot;')})">✏️ Edit</button>
+          <button onclick="deleteBook('${book._id}')">🗑️ Delete</button>
+        </div>
+      `;
+      bookList.appendChild(div);
+    });
+  }
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const book = {
+      title: form.title.value,
+      author: form.author.value,
+      price: parseFloat(form.price.value),
+      description: form.description.value,
+      image: form.image.value
+    };
+    const id = form.dataset.id;
+    const method = id ? 'PUT':'POST';
+    const url = id ? `/api/books/${id}`:'/api/books';
+    await fetch(url, {method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(book)});
+    form.reset(); delete form.dataset.id; fetchBooks();
+  });
+  function editBook(book) { resetLibraryOnEnter=true; showPage('landingPage'); }
+  async function deleteBook(id){ await fetch(`/api/books/${id}`, {method:'DELETE'}); fetchBooks(); }
+  if(localStorage.getItem('loggedIn')){ document.getElementById('logoutLink').style.display='inline'; showPage('landingPage'); }
+</script>
+</body>
+</html>
+~
