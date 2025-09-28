@@ -18,13 +18,6 @@ let collection;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Rate limit middleware (for /api)
-//const apiLimiter = rateLimit({
- // windowMs: 15 * 60 * 1000,
- // max: 100,
- // message: { error: 'Too many requests. Please try again later.' }
-//});
-//app.use('/api', apiLimiter);
 
 // Connect to MongoDB
 MongoClient.connect(MONGO_URI, { useUnifiedTopology: true })
