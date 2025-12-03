@@ -275,22 +275,32 @@
   function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
   function register(e) {
     e.preventDefault();
-    const u = document.getElementById('regUser').value;
+    const u = document.getElementById('regUser').value.trim();
     const p = document.getElementById('regPass').value;
-    localStorage.setItem('user_'+u, p);
-    alert("Registration successful!");
-    showPage('loginPage');
+    if(!u || !p){ alert('Username and password required'); return; }
+    fetch('/api/users/register', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ username: u, password: p })
+    }).then(async res => {
+      if(res.ok){ alert('Registration successful!'); showPage('loginPage'); }
+      else { const j = await res.json().catch(()=>({})); alert(j.error || 'Registration failed'); }
+    }).catch(()=>alert('Registration failed')); 
   }
+
   function login(e) {
     e.preventDefault();
-    const u = document.getElementById('loginUser').value;
+    const u = document.getElementById('loginUser').value.trim();
     const p = document.getElementById('loginPass').value;
-    const stored = localStorage.getItem('user_'+u);
-    if(stored && stored === p){
-      localStorage.setItem('loggedIn', u);
-      document.getElementById('logoutLink').style.display='inline';
-      showPage('landingPage');
-    } else { alert("Invalid credentials"); }
+    if(!u || !p){ alert('Username and password required'); return; }
+    fetch('/api/users/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ username: u, password: p })
+    }).then(async res => {
+      if(res.ok){ localStorage.setItem('loggedIn', u); document.getElementById('logoutLink').style.display='inline'; showPage('landingPage'); }
+      else { const j = await res.json().catch(()=>({})); alert(j.error || 'Invalid credentials'); }
+    }).catch(()=>alert('Login failed'));
   }
   function logout() {
     localStorage.removeItem('loggedIn');
